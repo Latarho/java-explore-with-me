@@ -17,9 +17,9 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse onUserNotFoundException(final UserNotFoundException exception) {
+    public ApiError onUserNotFoundException(final UserNotFoundException exception) {
         log.error(exception.getMessage());
-        return new ErrorResponse(
+        return new ApiError(
                 exception.getMessage(),
                 HttpStatus.NOT_FOUND.getReasonPhrase(),
                 HttpStatus.NOT_FOUND.toString(),
