@@ -34,12 +34,14 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryDto getById(int categoryId) {
+    @Transactional(readOnly = true)
+    public CategoryDto getById(Long categoryId) {
         Category category = getCategoryOrThrow(categoryId);
         return CategoryMapper.toCategoryDto(category);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CategoryDto> getAll(int from, int size) {
         Page<Category> categoryPage = categoryRepository.findAll(PageRequest.of(from / size, size));
         return CategoryMapper.toCategoryDtoList(categoryPage.getContent());
@@ -55,7 +57,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public void delete(int categoryId) {
+    public void delete(Long categoryId) {
 //        List<Event> events = eventService.getEventsByCategory(getCategoryOrThrow(categoryId));
 //        if (!events.isEmpty()) {
 //            throw new CategoryHaveEventsException("Нельзя удалить категорию id (с ней связаны события): ");
@@ -64,7 +66,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category getCategoryOrThrow(int categoryId) {
+    public Category getCategoryOrThrow(Long categoryId) {
         return categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new CategoryNotFoundException("Отсутствует категория id: " + categoryId));
     }

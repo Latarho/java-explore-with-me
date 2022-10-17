@@ -18,29 +18,32 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
     @Override
+    @Transactional
     public UserDto create(UserDto userDto) {
         return UserMapper.toUserDto(userRepository.save(UserMapper.toUser(userDto)));
     }
 
     @Override
-    public List<UserDto> getById(int[] ids) {
+    @Transactional(readOnly = true)
+    public List<UserDto> getById(Long[] ids) {
         return UserMapper.toUserDtoList(userRepository.findAllById(
-                Arrays.stream(ids).boxed().collect(Collectors.toList())));
+                Arrays.stream(ids).collect(Collectors.toList())));
     }
 
     @Override
-    public void delete(int id) {
+    @Transactional
+    public void delete(Long id) {
         userRepository.deleteById(id);
     }
 
     @Override
-    public User getUserOrThrow(int userId) {
+    @Transactional(readOnly = true)
+    public User getUserOrThrow(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("Отсутствует пользователь id: " + userId));
     }

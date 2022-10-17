@@ -44,7 +44,7 @@ public class AdminCategoryController {
 //     * @param catId id категории
 //     */
 //    @DeleteMapping("/categories/{catId}")
-//    public void deleteCategory(@PathVariable int catId) {
+//    public void deleteCategory(@PathVariable Long catId) {
 //        log.info("Получен запрос - удаление категории: " + catId);
 //        categoryService.delete(catId);
 //    }

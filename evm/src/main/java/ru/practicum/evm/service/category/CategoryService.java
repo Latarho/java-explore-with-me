@@ -9,13 +9,13 @@ import java.util.List;
 public interface CategoryService {
     CategoryDto create(NewCategoryDto newCategoryDto);
 
-    CategoryDto getById(int categoryId);
+    CategoryDto getById(Long categoryId);
 
     List<CategoryDto> getAll(int from, int size);
 
     CategoryDto update(CategoryDto categoryDto);
 
-    void delete(int categoryId);
+    void delete(Long categoryId);
 
-    Category getCategoryOrThrow(int categoryId); //служебный метод для проверки наличия категории в базе
+    Category getCategoryOrThrow(Long categoryId); //служебный метод для проверки наличия категории в базе
 }

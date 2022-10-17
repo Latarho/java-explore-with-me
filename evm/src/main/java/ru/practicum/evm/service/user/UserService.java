@@ -8,9 +8,9 @@ import java.util.List;
 public interface UserService {
     UserDto create(UserDto userDto);
 
-    List<UserDto> getById(int[] ids);
+    List<UserDto> getById(Long[] ids);
 
-    void delete(int id);
+    void delete(Long id);
 
-    User getUserOrThrow(int userId); //служебный метод для проверки наличия пользователя в базе
+    User getUserOrThrow(Long userId); //служебный метод для проверки наличия пользователя в базе
 }

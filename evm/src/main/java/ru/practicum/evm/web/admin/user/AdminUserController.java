@@ -38,7 +38,7 @@ public class AdminUserController {
      * @return список пользователей
      */
     @GetMapping("/users")
-    public List<UserDto> getById(@RequestParam int[] ids) {
+    public List<UserDto> getById(@RequestParam Long[] ids) {
         log.info("Получен запрос - получение информации о пользователях: " + Arrays.toString(ids));
         return userService.getById(ids);
     }
@@ -48,7 +48,7 @@ public class AdminUserController {
      * @param id id пользователя
      */
     @DeleteMapping("/users/{id}")
-    public void delete(@PathVariable int id) {
+    public void delete(@PathVariable Long id) {
         log.info("Получен запрос - удаление пользователя: " + id);
         userService.delete(id);
     }
