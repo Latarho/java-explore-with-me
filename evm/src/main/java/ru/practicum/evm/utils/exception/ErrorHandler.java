@@ -74,9 +74,9 @@ public class ErrorHandler {
         );
     }
 
-    @ExceptionHandler(ConditionsNotMetException.class)
+    @ExceptionHandler(WrongRequestException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ApiError onConditionsNotMetException(ConditionsNotMetException exception) {
+    public ApiError onConditionsNotMetException(WrongRequestException exception) {
         log.error(exception.getMessage());
         return new ApiError(
                 exception.getMessage(),

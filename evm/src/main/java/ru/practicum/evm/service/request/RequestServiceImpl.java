@@ -3,7 +3,7 @@ package ru.practicum.evm.service.request;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.evm.utils.exception.ConditionsNotMetException;
+import ru.practicum.evm.utils.exception.WrongRequestException;
 import ru.practicum.evm.utils.exception.RequestNotFoundException;
 import ru.practicum.evm.utils.enumeration.EventState;
 import ru.practicum.evm.utils.enumeration.RequestState;
@@ -39,16 +39,16 @@ public class RequestServiceImpl implements RequestService {
         newRequest.setState(RequestState.PENDING);
         List<Request> eventRequests = event.getRequests();
         if (eventRequests.stream().anyMatch(request -> request.getRequester().getId() == userId)) {
-            throw new ConditionsNotMetException("Пользователь уже направил запрос на участие в данном событии");
+            throw new WrongRequestException("Пользователь уже направил запрос на участие в данном событии");
         }
         if (requester.getId() == event.getInitiator().getId()) {
-            throw new ConditionsNotMetException("Нельзя участвовать в своем событии");
+            throw new WrongRequestException("Нельзя участвовать в своем событии");
         }
         if (!event.getState().equals(EventState.PUBLISHED)) {
-            throw new ConditionsNotMetException("Событие не опубликовано, принять участие нельзя");
+            throw new WrongRequestException("Событие не опубликовано, принять участие нельзя");
         }
         if (event.getParticipantLimit() != 0 && eventRequests.size() >= event.getParticipantLimit()) {
-            throw new ConditionsNotMetException("Отсутствуют свободные места на участие в событии");
+            throw new WrongRequestException("Отсутствуют свободные места на участие в событии");
         }
         if (!event.getRequestModeration()) {
             newRequest.setState(RequestState.CONFIRMED);
@@ -70,7 +70,7 @@ public class RequestServiceImpl implements RequestService {
         Request request = getRequestOrThrow(requestId);
         User user = getUserOrThrow(userId);
         if (user.getId() != request.getRequester().getId()) {
-            throw new ConditionsNotMetException("Пользователь не оставлял запрос на участие в событии");
+            throw new WrongRequestException("Пользователь не оставлял запрос на участие в событии");
         }
         requestRepository.delete(request);
         request.setState(RequestState.CANCELED);
@@ -83,7 +83,7 @@ public class RequestServiceImpl implements RequestService {
         User user = getUserOrThrow(userId);
         Event event = getEventOrThrow(eventId);
         if (user.getId() != event.getInitiator().getId()) {
-            throw new ConditionsNotMetException("Это событие создал другой пользователь");
+            throw new WrongRequestException("Это событие создал другой пользователь");
         }
         return RequestMapper.toParticipationRequestDtoList(event.getRequests());
     }
@@ -95,13 +95,13 @@ public class RequestServiceImpl implements RequestService {
         Event event = getEventOrThrow(eventId);
         Request request = getRequestOrThrow(requestId);
         if (user.getId() != event.getInitiator().getId()) {
-            throw new ConditionsNotMetException("Это событие создал другой пользователь");
+            throw new WrongRequestException("Это событие создал другой пользователь");
         }
         if (!event.getRequestModeration() || event.getParticipantLimit() == 0) {
-            throw new ConditionsNotMetException("Для участия в событии не требуется подтверждение");
+            throw new WrongRequestException("Для участия в событии не требуется подтверждение");
         }
         if (event.getParticipantLimit() == event.getRequests().size()) {
-            throw new ConditionsNotMetException("Отсутствуют свободные места на участие в событии");
+            throw new WrongRequestException("Отсутствуют свободные места на участие в событии");
         }
         request.setState(RequestState.CONFIRMED);
         List<Request> requestList = event.getRequests();
@@ -122,7 +122,7 @@ public class RequestServiceImpl implements RequestService {
         Event event = getEventOrThrow(eventId);
         Request request = getRequestOrThrow(requestId);
         if (user.getId() != event.getInitiator().getId()) {
-            throw new ConditionsNotMetException("Это событие создал другой пользователь");
+            throw new WrongRequestException("Это событие создал другой пользователь");
         }
         request.setState(RequestState.REJECTED);
         return RequestMapper.toParticipationRequestDto(request);

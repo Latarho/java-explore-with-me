@@ -5,7 +5,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.evm.utils.client.StatsClient;
-import ru.practicum.evm.utils.exception.ConditionsNotMetException;
+import ru.practicum.evm.utils.exception.WrongRequestException;
 import ru.practicum.evm.utils.exception.EventNotFoundException;
 import ru.practicum.evm.model.category.Category;
 import ru.practicum.evm.utils.enumeration.EventState;
@@ -40,7 +40,7 @@ public class EventServiceImpl implements EventService {
     @Transactional
     public EventFullDto create(NewEventDto newEventDto, Long userId) {
         if (LocalDateTime.parse(newEventDto.getEventDate(), FORMAT).equals(LocalDateTime.now().plusHours(2))) {
-            throw new ConditionsNotMetException("Дата и время на которые намечено событие не может быть раньше, " +
+            throw new WrongRequestException("Дата и время на которые намечено событие не может быть раньше, " +
                                                 "чем через два часа от текущего момента");
         }
         User user = getUserOrThrow(userId); // пользователь существует?
@@ -172,12 +172,12 @@ public class EventServiceImpl implements EventService {
             updatedCategory = getCategoryOrThrow(eventUpdateDto.getCategory());
         }
         if (eventToUpdate.getState().equals(EventState.PUBLISHED)) {
-            throw new ConditionsNotMetException("Изменить можно только отмененные события или события " +
+            throw new WrongRequestException("Изменить можно только отмененные события или события " +
                     "в состоянии ожидания модерации");
         }
         LocalDateTime eventDate = LocalDateTime.parse(eventUpdateDto.getEventDate(), FORMAT);
         if (eventDate.equals(LocalDateTime.now().plusHours(2))) {
-            throw new ConditionsNotMetException("Дата и время на которые намечено событие не может быть раньше, " +
+            throw new WrongRequestException("Дата и время на которые намечено событие не может быть раньше, " +
                     "чем через два часа от текущего момента");
         }
         if (eventToUpdate.getState().equals(EventState.CANCELED)) {
@@ -253,11 +253,11 @@ public class EventServiceImpl implements EventService {
     public EventFullDto publishEvent(Long eventId) {
         Event event = getEventOrThrow(eventId);
         if (event.getEventDate().isBefore(LocalDateTime.now().plusHours(1L))) {
-            throw new ConditionsNotMetException("Дата и время на которые намечено событие не может быть раньше, " +
+            throw new WrongRequestException("Дата и время на которые намечено событие не может быть раньше, " +
                     "чем через два часа от текущего момента");
         }
         if (!event.getState().equals(EventState.PENDING)) {
-            throw new ConditionsNotMetException("Нельзя опубликовать событие, не находящееся в состоянии ожидания.");
+            throw new WrongRequestException("Нельзя опубликовать событие, не находящееся в состоянии ожидания.");
         }
         event.setPublishedOn(LocalDateTime.now());
         return changeState(eventId, EventState.PUBLISHED);
@@ -268,7 +268,7 @@ public class EventServiceImpl implements EventService {
     public EventFullDto rejectEvent(Long eventId) {
         Event event = getEventOrThrow(eventId);
         if (event.getState().equals(EventState.PUBLISHED)) {
-            throw new ConditionsNotMetException("Нельзя отклонить уже опубликованное событие.");
+            throw new WrongRequestException("Нельзя отклонить уже опубликованное событие.");
         }
         return changeState(eventId, EventState.CANCELED);
     }
@@ -280,7 +280,7 @@ public class EventServiceImpl implements EventService {
         Event event = getEventOrThrow(eventId);
         checkEventInitiator(event, userId);
         if (!event.getState().equals(EventState.PENDING)) {
-            throw new ConditionsNotMetException("Отменить можно только событие в состоянии ожидания модерации");
+            throw new WrongRequestException("Отменить можно только событие в состоянии ожидания модерации");
         }
         event.setState(EventState.CANCELED);
         return EventMapper.eventToFullDto(event, event.getRequests(), getStatForEvent(eventId));
@@ -355,7 +355,7 @@ public class EventServiceImpl implements EventService {
      */
     private void checkEventInitiator(Event event, Long userId) {
         if (!Objects.equals(event.getInitiator().getId(), userId)) {
-            throw new ConditionsNotMetException("Пользователь id: " + userId + " не является инициатором события: "
+            throw new WrongRequestException("Пользователь id: " + userId + " не является инициатором события: "
                     + event.getId());
         }
     }

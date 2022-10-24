@@ -19,7 +19,7 @@ public class User {
     @Column(name = "id", updatable = false, unique = true)
     private Long id; // id пользователя
     @Column(name = "name", nullable = false)
-    @Size(min = 2, max = 50)
+    @Size(min = 2, max = 255)
     private String name; // имя
     @Column(name = "email", unique = true, nullable = false)
     @Size(max = 255)
