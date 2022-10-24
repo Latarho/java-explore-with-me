@@ -2,7 +2,7 @@ package ru.practicum.evm.model.event;
 
 import lombok.Data;
 import ru.practicum.evm.model.category.Category;
-import ru.practicum.evm.model.enumeration.EventState;
+import ru.practicum.evm.utils.enumeration.EventState;
 import ru.practicum.evm.model.location.Location;
 import ru.practicum.evm.model.request.Request;
 import ru.practicum.evm.model.user.User;
@@ -58,6 +58,4 @@ public class Event {
     private String title;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "event")
     private List<Request> requests;
-//    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "event")
-//    private List<Comment> comments;
 }

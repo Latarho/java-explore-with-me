@@ -1,17 +1,20 @@
 package ru.practicum.evm.service.category;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.evm.exception.CategoryHaveEventsException;
-import ru.practicum.evm.exception.CategoryNotFoundException;
+import ru.practicum.evm.utils.exception.CategoryHaveEventsException;
+import ru.practicum.evm.utils.exception.CategoryNotFoundException;
 import ru.practicum.evm.model.category.Category;
 import ru.practicum.evm.model.category.CategoryDto;
 import ru.practicum.evm.model.category.CategoryMapper;
 import ru.practicum.evm.model.category.NewCategoryDto;
+import ru.practicum.evm.model.event.Event;
 import ru.practicum.evm.repository.CategoryRepository;
+import ru.practicum.evm.service.event.EventService;
 
 import java.util.List;
 
@@ -19,12 +22,16 @@ import java.util.List;
  * Реализация интерфейса {@link CategoryService}
  */
 @Service
-@RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final EventService eventService;
 
-//    private final EventService eventService;
+    @Autowired
+    public CategoryServiceImpl(CategoryRepository categoryRepository, @Lazy EventService eventService) {
+        this.categoryRepository = categoryRepository;
+        this.eventService = eventService;
+    }
 
     @Override
     @Transactional
@@ -42,7 +49,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CategoryDto> getAll(int from, int size) {
+    public List<CategoryDto> getAllWithPagination(int from, int size) {
         Page<Category> categoryPage = categoryRepository.findAll(PageRequest.of(from / size, size));
         return CategoryMapper.toCategoryDtoList(categoryPage.getContent());
     }
@@ -58,16 +65,17 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public void delete(Long categoryId) {
-//        List<Event> events = eventService.getEventsByCategory(getCategoryOrThrow(categoryId));
-//        if (!events.isEmpty()) {
-//            throw new CategoryHaveEventsException("Нельзя удалить категорию id (с ней связаны события): ");
-//        }
-//        categoryRepository.deleteById(categoryId);
+        List<Event> events = eventService.getEventsByCategory(getCategoryOrThrow(categoryId));
+        if (!events.isEmpty()) {
+            throw new CategoryHaveEventsException("Нельзя удалить категорию (с ней связаны события): " + categoryId);
+        }
+        categoryRepository.deleteById(categoryId);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Category getCategoryOrThrow(Long categoryId) {
-        return categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new CategoryNotFoundException("Отсутствует категория id: " + categoryId));
+        return categoryRepository.findById(categoryId).orElseThrow(() ->
+                new CategoryNotFoundException("Отсутствует категория: " + categoryId));
     }
 }

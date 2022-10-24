@@ -1,4 +1,4 @@
-package ru.practicum.evm.model.enumeration;
+package ru.practicum.evm.utils.enumeration;
 
 /**
  * Список состояний жизненного цикла события

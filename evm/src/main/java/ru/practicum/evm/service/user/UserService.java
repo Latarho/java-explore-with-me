@@ -6,11 +6,12 @@ import ru.practicum.evm.model.user.UserDto;
 import java.util.List;
 
 public interface UserService {
+
     UserDto create(UserDto userDto);
 
-    List<UserDto> getById(Long[] ids);
+    List<UserDto> getById(List<Long> ids);
 
     void delete(Long id);
 
-    User getUserOrThrow(Long userId); //служебный метод для проверки наличия пользователя в базе
+    User getUserOrThrow(Long userId);
 }

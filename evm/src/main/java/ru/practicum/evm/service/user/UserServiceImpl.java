@@ -3,7 +3,7 @@ package ru.practicum.evm.service.user;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.evm.exception.UserNotFoundException;
+import ru.practicum.evm.utils.exception.UserNotFoundException;
 import ru.practicum.evm.model.user.User;
 import ru.practicum.evm.model.user.UserDto;
 import ru.practicum.evm.model.user.UserMapper;
@@ -30,9 +30,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserDto> getById(Long[] ids) {
+    public List<UserDto> getById(List<Long> ids) {
         return UserMapper.toUserDtoList(userRepository.findAllById(
-                Arrays.stream(ids).collect(Collectors.toList())));
+                Arrays.stream(ids.toArray(new Long[0])).collect(Collectors.toList())));
     }
 
     @Override
@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public User getUserOrThrow(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Отсутствует пользователь id: " + userId));
+        return userRepository.findById(userId).orElseThrow(() ->
+                new UserNotFoundException("Отсутствует пользователь id: " + userId));
     }
 }

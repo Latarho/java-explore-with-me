@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS compilations
 (
     id        BIGSERIAL NOT NULL,
     title     VARCHAR,
-    is_pinned BOOLEAN,
+    pinned BOOLEAN,
     CONSTRAINT pk_compilation PRIMARY KEY (id)
 );
 
@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS events
 
 CREATE TABLE IF NOT EXISTS requests
 (
-    id           BIGSERIAL                      NOT NULL,
+    id           BIGSERIAL                  NOT NULL,
     event_id     BIGINT                     NOT NULL,
     requester_id BIGINT                     NOT NULL,
     created      TIMESTAMP WITHOUT TIME ZONE NOT NULL,

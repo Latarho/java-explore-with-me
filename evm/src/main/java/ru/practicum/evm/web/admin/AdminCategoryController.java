@@ -1,4 +1,4 @@
-package ru.practicum.evm.web.admin.user;
+package ru.practicum.evm.web.admin;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +9,9 @@ import ru.practicum.evm.service.category.CategoryService;
 
 import javax.validation.Valid;
 
+/**
+ * Класс-контроллер работа с категориями (административная часть API)
+ */
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -34,18 +37,18 @@ public class AdminCategoryController {
      * @return объект класса Category (категория c внесенными изменениями)
      */
     @PatchMapping("/categories")
-    public CategoryDto updateCategory(@RequestBody CategoryDto categoryDto) {
+    public CategoryDto update(@RequestBody CategoryDto categoryDto) {
         log.info("Получен запрос - изменение существующей категории: " + categoryDto.toString());
         return categoryService.update(categoryDto);
     }
 
-//    /**
-//     * Удаление категории (у категории не должно быть связанных событий)
-//     * @param catId id категории
-//     */
-//    @DeleteMapping("/categories/{catId}")
-//    public void deleteCategory(@PathVariable Long catId) {
-//        log.info("Получен запрос - удаление категории: " + catId);
-//        categoryService.delete(catId);
-//    }
+    /**
+     * Удаление категории (у категории не должно быть связанных событий)
+     * @param catId id категории
+     */
+    @DeleteMapping("/categories/{catId}")
+    public void delete(@PathVariable Long catId) {
+        log.info("Получен запрос - удаление категории: " + catId);
+        categoryService.delete(catId);
+    }
 }

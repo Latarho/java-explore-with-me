@@ -13,9 +13,9 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class NewCompilationDto {
-    private List<Long> events;
-    private boolean pinned;
+    private List<Long> events; // список id событий входящих в подборку
+    private boolean pinned; // закреплена ли подборка на главной странице сайта
     @JsonProperty(required = true)
     @NotBlank
-    private String title;
+    private String title; // заголовок подборки
 }

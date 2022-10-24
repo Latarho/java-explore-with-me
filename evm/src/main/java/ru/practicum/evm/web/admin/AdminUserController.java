@@ -1,4 +1,4 @@
-package ru.practicum.evm.web.admin.user;
+package ru.practicum.evm.web.admin;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,8 +38,8 @@ public class AdminUserController {
      * @return список пользователей
      */
     @GetMapping("/users")
-    public List<UserDto> getById(@RequestParam Long[] ids) {
-        log.info("Получен запрос - получение информации о пользователях: " + Arrays.toString(ids));
+    public List<UserDto> getById(@RequestParam List<Long> ids) {
+        log.info("Получен запрос - получение информации о пользователях: " + Arrays.toString(ids.toArray()));
         return userService.getById(ids);
     }
 

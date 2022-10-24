@@ -7,15 +7,16 @@ import ru.practicum.evm.model.category.NewCategoryDto;
 import java.util.List;
 
 public interface CategoryService {
+
     CategoryDto create(NewCategoryDto newCategoryDto);
 
     CategoryDto getById(Long categoryId);
 
-    List<CategoryDto> getAll(int from, int size);
+    List<CategoryDto> getAllWithPagination(int from, int size);
 
     CategoryDto update(CategoryDto categoryDto);
 
     void delete(Long categoryId);
 
-    Category getCategoryOrThrow(Long categoryId); //служебный метод для проверки наличия категории в базе
+    Category getCategoryOrThrow(Long categoryId);
 }

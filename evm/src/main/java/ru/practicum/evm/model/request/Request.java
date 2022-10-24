@@ -1,7 +1,9 @@
 package ru.practicum.evm.model.request;
 
-import lombok.Data;
-import ru.practicum.evm.model.enumeration.RequestState;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import ru.practicum.evm.utils.enumeration.RequestState;
 import ru.practicum.evm.model.event.Event;
 import ru.practicum.evm.model.user.User;
 
@@ -9,9 +11,11 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 /**
- * Модель - запрос на участие в событии
+ * Модель - заявка на участие в событии
  */
-@Data
+@Getter
+@Setter
+@ToString
 @Entity(name = "Request")
 @Table(name = "requests")
 public class Request {
@@ -21,9 +25,11 @@ public class Request {
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", nullable = false)
+    @ToString.Exclude
     private Event event;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "requester_id", nullable = false)
+    @ToString.Exclude
     private User requester;
     @Column(name = "created")
     private LocalDateTime createdOn;

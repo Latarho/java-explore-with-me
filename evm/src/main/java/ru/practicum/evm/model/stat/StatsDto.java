@@ -3,10 +3,14 @@ package ru.practicum.evm.model.stat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+/**
+ * Dto - статистика
+ */
 @Data
 @AllArgsConstructor
-public class Stat {
+public class StatsDto {
     private String app;
     private String uri;
-    private Long hits;
+    private String ip;
+    private String timestamp;
 }

@@ -1,16 +1,20 @@
 package ru.practicum.evm.model.category;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.validation.constraints.NotBlank;
 
 /**
  * DTO - категория (данные для добавления новой категории)
  */
-@Data
+@Getter
+@Setter
+@ToString
 public class NewCategoryDto {
     @JsonProperty(required = true)
     @NotBlank
-    private String name;
+    private String name; // название категории
 }

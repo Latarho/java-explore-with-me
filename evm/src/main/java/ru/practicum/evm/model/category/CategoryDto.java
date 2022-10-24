@@ -1,7 +1,9 @@
 package ru.practicum.evm.model.category;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -9,11 +11,13 @@ import javax.validation.constraints.NotNull;
 /**
  * DTO - категория
  */
-@Data
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 public class CategoryDto {
     @NotNull
-    private Long id;
+    private Long id; // id категории
     @NotBlank
-    private String name;
+    private String name; // название категории
 }

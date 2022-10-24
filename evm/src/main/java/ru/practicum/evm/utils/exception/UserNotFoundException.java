@@ -1,4 +1,4 @@
-package ru.practicum.evm.exception;
+package ru.practicum.evm.utils.exception;
 
 public class UserNotFoundException extends RuntimeException {
 
