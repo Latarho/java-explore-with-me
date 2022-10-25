@@ -51,7 +51,7 @@ public class EventServiceImpl implements EventService {
         event.setCreatedOn(LocalDateTime.now());
         event.setState(EventState.PENDING); // у только что созданного события статус Pending
         eventRepository.save(event);
-        return EventMapper.eventToFullDto(event, null, null);
+        return EventMapper.toEventFullDto(event, null, null);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class EventServiceImpl implements EventService {
     public EventFullDto getById(HttpServletRequest request, Long eventId) {
         sendStats(request);
         Event event = getEventOrThrow(eventId); // событие существует?
-        return EventMapper.eventToFullDto(event, event.getRequests(), getStatForEvent(eventId));
+        return EventMapper.toEventFullDto(event, event.getRequests(), getStatForEvent(eventId));
     }
 
     @Override
@@ -93,9 +93,12 @@ public class EventServiceImpl implements EventService {
                     .sorted(Comparator.comparing(Event::getEventDate))
                     .collect(Collectors.toList());
         }
+        List<Event> eventPublishedList = events.stream()
+                .filter(event -> event.getState().equals(EventState.PUBLISHED))
+                .collect(Collectors.toList());
 
         List<EventShortDto> eventShortDtoList = new ArrayList<>();
-        mapEventsToShortDto(events, eventShortDtoList);
+        mapEventsToShortDto(eventPublishedList, eventShortDtoList);
 
         if (sort.equals("VIEWS")) {
             eventShortDtoList = eventShortDtoList.stream()
@@ -134,7 +137,7 @@ public class EventServiceImpl implements EventService {
                 .collect(Collectors.toList());
         List<EventFullDto> eventFullDtos = new ArrayList<>();
         for (Event event : events) {
-            eventFullDtos.add(EventMapper.eventToFullDto(event, event.getRequests(), getStatForEvent(event.getId())));
+            eventFullDtos.add(EventMapper.toEventFullDto(event, event.getRequests(), getStatForEvent(event.getId())));
         }
         return eventFullDtos;
     }
@@ -145,7 +148,7 @@ public class EventServiceImpl implements EventService {
         getUserOrThrow(userId);
         Event event = getEventOrThrow(eventId);
         checkEventInitiator(event, userId);
-        return EventMapper.eventToFullDto(event, event.getRequests(), getStatForEvent(eventId));
+        return EventMapper.toEventFullDto(event, event.getRequests(), getStatForEvent(eventId));
     }
 
     @Override
@@ -204,7 +207,7 @@ public class EventServiceImpl implements EventService {
         if (updatedEvent.getTitle() != null) {
             eventToUpdate.setTitle(updatedEvent.getTitle());
         }
-        return EventMapper.eventToFullDto(eventToUpdate, eventToUpdate.getRequests(), getStatForEvent(eventToUpdate.getId()));
+        return EventMapper.toEventFullDto(eventToUpdate, eventToUpdate.getRequests(), getStatForEvent(eventToUpdate.getId()));
     }
 
 
@@ -244,7 +247,7 @@ public class EventServiceImpl implements EventService {
         if (updatedEvent.getTitle() != null) {
             eventToUpdate.setTitle(updatedEvent.getTitle());
         }
-        return EventMapper.eventToFullDto(eventToUpdate, eventToUpdate.getRequests(), getStatForEvent(eventToUpdate.getId()));
+        return EventMapper.toEventFullDto(eventToUpdate, eventToUpdate.getRequests(), getStatForEvent(eventToUpdate.getId()));
     }
 
     @Override
@@ -282,7 +285,7 @@ public class EventServiceImpl implements EventService {
             throw new WrongRequestException("Отменить можно только событие в состоянии ожидания модерации");
         }
         event.setState(EventState.CANCELED);
-        return EventMapper.eventToFullDto(event, event.getRequests(), getStatForEvent(eventId));
+        return EventMapper.toEventFullDto(event, event.getRequests(), getStatForEvent(eventId));
     }
 
     @Override
@@ -307,7 +310,7 @@ public class EventServiceImpl implements EventService {
     private EventFullDto changeState(Long eventId, EventState state) {
         Event event = getEventOrThrow(eventId);
         event.setState(state);
-        return EventMapper.eventToFullDto(event, event.getRequests(), getStatForEvent(eventId));
+        return EventMapper.toEventFullDto(event, event.getRequests(), getStatForEvent(eventId));
     }
 
     /**

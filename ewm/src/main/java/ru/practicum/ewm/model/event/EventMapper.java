@@ -36,7 +36,7 @@ public class EventMapper {
         );
     }
 
-    public static EventFullDto eventToFullDto(Event event, @Nullable List<Request> requestList, @Nullable Stats stats) {
+    public static EventFullDto toEventFullDto(Event event, @Nullable List<Request> requestList, @Nullable Stats stats) {
         return new EventFullDto(
                 event.getId(),
                 event.getAnnotation(),
