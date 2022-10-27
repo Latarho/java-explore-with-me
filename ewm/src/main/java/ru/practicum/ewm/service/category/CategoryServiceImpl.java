@@ -3,11 +3,9 @@ package ru.practicum.ewm.service.category;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.utils.exception.CategoryHaveEventsException;
-import ru.practicum.ewm.utils.exception.CategoryNotFoundException;
 import ru.practicum.ewm.model.category.Category;
 import ru.practicum.ewm.model.category.CategoryDto;
 import ru.practicum.ewm.model.category.CategoryMapper;
@@ -15,6 +13,8 @@ import ru.practicum.ewm.model.category.NewCategoryDto;
 import ru.practicum.ewm.model.event.Event;
 import ru.practicum.ewm.repository.CategoryRepository;
 import ru.practicum.ewm.service.event.EventService;
+import ru.practicum.ewm.utils.exception.EntityNotFoundException;
+import ru.practicum.ewm.utils.helpers.PageBuilder;
 
 import java.util.List;
 
@@ -50,7 +50,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional(readOnly = true)
     public List<CategoryDto> getAllWithPagination(int from, int size) {
-        Page<Category> categoryPage = categoryRepository.findAll(PageRequest.of(from / size, size));
+        Page<Category> categoryPage = categoryRepository.findAll(PageBuilder.build(from, size));
         return CategoryMapper.toCategoryDtoList(categoryPage.getContent());
     }
 
@@ -76,6 +76,6 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional(readOnly = true)
     public Category getCategoryOrThrow(Long categoryId) {
         return categoryRepository.findById(categoryId).orElseThrow(() ->
-                new CategoryNotFoundException("Отсутствует категория: " + categoryId));
+                new EntityNotFoundException("Отсутствует категория: " + categoryId));
     }
 }

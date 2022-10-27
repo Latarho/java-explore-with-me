@@ -3,8 +3,8 @@ package ru.practicum.ewm.service.request;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.ewm.utils.exception.EntityNotFoundException;
 import ru.practicum.ewm.utils.exception.WrongRequestException;
-import ru.practicum.ewm.utils.exception.RequestNotFoundException;
 import ru.practicum.ewm.utils.enumeration.EventState;
 import ru.practicum.ewm.utils.enumeration.RequestState;
 import ru.practicum.ewm.model.event.Event;
@@ -131,7 +131,7 @@ public class RequestServiceImpl implements RequestService {
 
     private Request getRequestOrThrow(Long requestId) {
         return requestRepository.findById(requestId).orElseThrow(() ->
-                new RequestNotFoundException("Отсутствует запрос: " + requestId));
+                new EntityNotFoundException("Отсутствует запрос: " + requestId));
     }
 
     /**

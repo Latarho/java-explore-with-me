@@ -6,7 +6,7 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
-import ru.practicum.ewm.utils.exception.StatsNotFoundException;
+import ru.practicum.ewm.utils.exception.EntityNotFoundException;
 import ru.practicum.ewm.model.stat.Stats;
 import ru.practicum.ewm.model.stat.StatsDto;
 
@@ -32,7 +32,7 @@ public class StatsClient {
                 "&end=" + URLEncoder.encode(end, StandardCharsets.UTF_8) +
                 "&uris=" + URLEncoder.encode("/events/" + id, StandardCharsets.UTF_8), Stats[].class);
         if (result == null) {
-            throw new StatsNotFoundException("Отсутствует статистика");
+            throw new EntityNotFoundException("Отсутствует статистика");
         }
         return result[0];
     }

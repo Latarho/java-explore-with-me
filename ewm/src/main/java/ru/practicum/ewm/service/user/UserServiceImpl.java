@@ -3,7 +3,7 @@ package ru.practicum.ewm.service.user;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.ewm.utils.exception.UserNotFoundException;
+import ru.practicum.ewm.utils.exception.EntityNotFoundException;
 import ru.practicum.ewm.model.user.User;
 import ru.practicum.ewm.model.user.UserDto;
 import ru.practicum.ewm.model.user.UserMapper;
@@ -45,6 +45,6 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public User getUserOrThrow(Long userId) {
         return userRepository.findById(userId).orElseThrow(() ->
-                new UserNotFoundException("Отсутствует пользователь id: " + userId));
+                new EntityNotFoundException("Отсутствует пользователь id: " + userId));
     }
 }

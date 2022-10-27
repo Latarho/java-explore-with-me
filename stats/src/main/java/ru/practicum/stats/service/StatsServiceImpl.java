@@ -37,16 +37,16 @@ public class StatsServiceImpl implements StatsService {
         LocalDateTime startTime = LocalDateTime.parse(start, FORMAT);
         LocalDateTime endTime = LocalDateTime.parse(end, FORMAT);
         for (String uri : uris) {
-            if (!isUnique && startTime.equals(endTime)) {
+            if (!isUnique && startTime.compareTo(endTime) == 0) {
                 statsOutDtoList.add(StatsHitMapper.toStatsOutDto(
                         statsRepository.findAllByUri(uri)));
-            } else if (isUnique && startTime.equals(endTime)) {
+            } else if (isUnique && startTime.compareTo(endTime) == 0) {
                 statsOutDtoList.add(StatsHitMapper.toStatsOutDto(
                         statsRepository.findDistinctByUriAndIpAndApp(uri)));
-            } else if (!isUnique && !startTime.equals(endTime)) {
+            } else if (!isUnique && startTime.compareTo(endTime) != 0) {
                 statsOutDtoList.add(StatsHitMapper.toStatsOutDto(
                         statsRepository.findAllByUriAndTimestampBetween(uri, startTime, endTime)));
-            } else if (isUnique && !startTime.equals(endTime)) {
+            } else if (isUnique && startTime.compareTo(endTime) != 0) {
                 statsOutDtoList.add(StatsHitMapper.toStatsOutDto(
                         statsRepository.findDistinctByUriAndTimestampBetween(uri, startTime, endTime)));
             }

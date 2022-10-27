@@ -16,19 +16,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ApiError onUserNotFoundException(final UserNotFoundException exception) {
-        log.error(exception.getMessage());
-        return new ApiError(
-                exception.getMessage(),
-                HttpStatus.NOT_FOUND.getReasonPhrase(),
-                HttpStatus.NOT_FOUND.toString(),
-                LocalDateTime.now().format(FORMAT)
-        );
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ApiError onCategoryNotFoundException(final CategoryNotFoundException exception) {
+    public ApiError onEntityNotFoundException(final EntityNotFoundException exception) {
         log.error(exception.getMessage());
         return new ApiError(
                 exception.getMessage(),
@@ -50,62 +38,14 @@ public class ErrorHandler {
         );
     }
 
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ApiError onCompilationNotFoundException(final CompilationNotFoundException exception) {
-        log.error(exception.getMessage());
-        return new ApiError(
-                exception.getMessage(),
-                HttpStatus.NOT_FOUND.getReasonPhrase(),
-                HttpStatus.NOT_FOUND.toString(),
-                LocalDateTime.now().format(FORMAT)
-        );
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ApiError onStatsNotFoundException(final StatsNotFoundException exception) {
-        log.error(exception.getMessage());
-        return new ApiError(
-                exception.getMessage(),
-                HttpStatus.NOT_FOUND.getReasonPhrase(),
-                HttpStatus.NOT_FOUND.toString(),
-                LocalDateTime.now().format(FORMAT)
-        );
-    }
-
     @ExceptionHandler(WrongRequestException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ApiError onConditionsNotMetException(WrongRequestException exception) {
+    public ApiError onWrongRequestException(WrongRequestException exception) {
         log.error(exception.getMessage());
         return new ApiError(
                 exception.getMessage(),
                 HttpStatus.FORBIDDEN.getReasonPhrase(),
                 HttpStatus.FORBIDDEN.toString(),
-                LocalDateTime.now().format(FORMAT)
-        );
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ApiError onEventNotFoundException(final EventNotFoundException exception) {
-        log.error(exception.getMessage());
-        return new ApiError(
-                exception.getMessage(),
-                HttpStatus.NOT_FOUND.getReasonPhrase(),
-                HttpStatus.NOT_FOUND.toString(),
-                LocalDateTime.now().format(FORMAT)
-        );
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ApiError onRequestNotFoundException(final RequestNotFoundException exception) {
-        log.error(exception.getMessage());
-        return new ApiError(
-                exception.getMessage(),
-                HttpStatus.NOT_FOUND.getReasonPhrase(),
-                HttpStatus.NOT_FOUND.toString(),
                 LocalDateTime.now().format(FORMAT)
         );
     }

@@ -2,11 +2,9 @@ package ru.practicum.ewm.service.compilation;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.utils.client.StatsClient;
-import ru.practicum.ewm.utils.exception.CompilationNotFoundException;
 import ru.practicum.ewm.model.compilation.Compilation;
 import ru.practicum.ewm.model.compilation.CompilationDto;
 import ru.practicum.ewm.model.compilation.CompilationMapper;
@@ -15,6 +13,8 @@ import ru.practicum.ewm.model.event.Event;
 import ru.practicum.ewm.model.stat.Stats;
 import ru.practicum.ewm.repository.CompilationRepository;
 import ru.practicum.ewm.service.event.EventService;
+import ru.practicum.ewm.utils.exception.EntityNotFoundException;
+import ru.practicum.ewm.utils.helpers.PageBuilder;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -54,7 +54,7 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     @Transactional(readOnly = true)
     public List<CompilationDto> getAllWithPagination(Boolean pinned, int from, int size) {
-        Page<Compilation> compilationPage = compilationRepository.findAll(PageRequest.of(from / size, size));
+        Page<Compilation> compilationPage = compilationRepository.findAll(PageBuilder.build(from, size));
         List<Compilation> compilationList = compilationPage.getContent();
         List<CompilationDto> compilationDtos = new ArrayList<>();
         for (Compilation compilation : compilationList) {
@@ -105,7 +105,7 @@ public class CompilationServiceImpl implements CompilationService {
 
     private Compilation getCompilationOrThrow(Long compilationId) {
         return compilationRepository.findById(compilationId).orElseThrow(() ->
-                new CompilationNotFoundException("Отсутствует подборка событий id: " + compilationId));
+                new EntityNotFoundException("Отсутствует подборка событий id: " + compilationId));
     }
 
     private Event getEventOrThrow(Long eventId) {

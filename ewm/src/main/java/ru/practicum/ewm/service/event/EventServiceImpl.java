@@ -1,12 +1,11 @@
 package ru.practicum.ewm.service.event;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.utils.client.StatsClient;
+import ru.practicum.ewm.utils.exception.EntityNotFoundException;
 import ru.practicum.ewm.utils.exception.WrongRequestException;
-import ru.practicum.ewm.utils.exception.EventNotFoundException;
 import ru.practicum.ewm.model.category.Category;
 import ru.practicum.ewm.utils.enumeration.EventState;
 import ru.practicum.ewm.model.event.*;
@@ -16,6 +15,7 @@ import ru.practicum.ewm.model.user.User;
 import ru.practicum.ewm.repository.EventRepository;
 import ru.practicum.ewm.service.category.CategoryService;
 import ru.practicum.ewm.service.user.UserService;
+import ru.practicum.ewm.utils.helpers.PageBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -84,8 +84,7 @@ public class EventServiceImpl implements EventService {
             end = LocalDateTime.parse(rangeEnd, FORMAT);
         }
 
-        List<Event> events = eventRepository.findEvents(text, categories, paid, start, end,
-                        PageRequest.of(from / size, size))
+        List<Event> events = eventRepository.findEvents(text, categories, paid, start, end, PageBuilder.build(from, size))
                 .stream()
                 .collect(Collectors.toList());
         if (sort.equals("EVENT_DATE")) {
@@ -131,8 +130,7 @@ public class EventServiceImpl implements EventService {
             end = LocalDateTime.parse(rangeEnd, FORMAT);
         }
 
-        List<Event> events = eventRepository.findEventsByAdmin(users, states, categories, start, end,
-                        PageRequest.of(from / size, size))
+        List<Event> events = eventRepository.findEventsByAdmin(users, states, categories, start, end, PageBuilder.build(from, size))
                 .stream()
                 .collect(Collectors.toList());
         List<EventFullDto> eventFullDtos = new ArrayList<>();
@@ -155,7 +153,7 @@ public class EventServiceImpl implements EventService {
     @Transactional(readOnly = true)
     public List<EventShortDto> getEventListByUserId(Long userId, int from, int size) {
         User user = getUserOrThrow(userId);
-        List<Event> eventList = eventRepository.findEventsByInitiator(user, PageRequest.of(from / size, size));
+        List<Event> eventList = eventRepository.findEventsByInitiator(user, PageBuilder.build(from, size));
         List<EventShortDto> eventShortDtoList = new ArrayList<>();
         if (eventList.size() != 0) {
             mapEventsToShortDto(eventList, eventShortDtoList);
@@ -186,15 +184,7 @@ public class EventServiceImpl implements EventService {
             eventToUpdate.setState(EventState.PENDING);
         }
         Event updatedEvent = EventMapper.toUpdateEvent(eventUpdateDto, updatedCategory);
-        if (updatedEvent.getAnnotation() != null) {
-            eventToUpdate.setAnnotation(updatedEvent.getAnnotation());
-        }
-        if (updatedEvent.getCategory() != null) {
-            eventToUpdate.setCategory(updatedEvent.getCategory());
-        }
-        if (updatedEvent.getDescription() != null) {
-            eventToUpdate.setDescription(updatedEvent.getDescription());
-        }
+        updateEventData(eventToUpdate, updatedEvent);
         if (updatedEvent.getEventDate() != null) {
             eventToUpdate.setEventDate(LocalDateTime.parse(eventUpdateDto.getEventDate(), FORMAT));
         }
@@ -204,12 +194,8 @@ public class EventServiceImpl implements EventService {
         if (updatedEvent.getParticipantLimit() != null) {
             eventToUpdate.setParticipantLimit(eventUpdateDto.getParticipantLimit());
         }
-        if (updatedEvent.getTitle() != null) {
-            eventToUpdate.setTitle(updatedEvent.getTitle());
-        }
         return EventMapper.toEventFullDto(eventToUpdate, eventToUpdate.getRequests(), getStatForEvent(eventToUpdate.getId()));
     }
-
 
     @Override
     @Transactional
@@ -220,15 +206,7 @@ public class EventServiceImpl implements EventService {
             updatedCategory = getCategoryOrThrow(adminUpdateEventRequestDto.getCategory());
         }
         Event updatedEvent = EventMapper.toUpdateEventAdmin(adminUpdateEventRequestDto, updatedCategory, eventId);
-        if (updatedEvent.getAnnotation() != null) {
-            eventToUpdate.setAnnotation(updatedEvent.getAnnotation());
-        }
-        if (updatedEvent.getCategory() != null) {
-            eventToUpdate.setCategory(updatedEvent.getCategory());
-        }
-        if (updatedEvent.getDescription() != null) {
-            eventToUpdate.setDescription(updatedEvent.getDescription());
-        }
+        updateEventData(eventToUpdate, updatedEvent);
         if (updatedEvent.getEventDate() != null) {
             eventToUpdate.setEventDate(updatedEvent.getEventDate());
         }
@@ -243,9 +221,6 @@ public class EventServiceImpl implements EventService {
         }
         if (updatedEvent.getRequestModeration() != null) {
             eventToUpdate.setRequestModeration(updatedEvent.getRequestModeration());
-        }
-        if (updatedEvent.getTitle() != null) {
-            eventToUpdate.setTitle(updatedEvent.getTitle());
         }
         return EventMapper.toEventFullDto(eventToUpdate, eventToUpdate.getRequests(), getStatForEvent(eventToUpdate.getId()));
     }
@@ -292,7 +267,7 @@ public class EventServiceImpl implements EventService {
     @Transactional(readOnly = true)
     public Event getEventOrThrow(Long eventId) {
         return eventRepository.findById(eventId).orElseThrow(() ->
-                new EventNotFoundException("Отсутствует событие id: " + eventId));
+                new EntityNotFoundException("Отсутствует событие id: " + eventId));
     }
 
     @Override
@@ -305,6 +280,26 @@ public class EventServiceImpl implements EventService {
     @Transactional(readOnly = true)
     public List<Event> getAllById(List<Long> eventIdList) {
         return eventRepository.findAllById(eventIdList);
+    }
+
+    /**
+     * Обновление атрибутов события
+     * @param eventToUpdate событие для обновления
+     * @param updatedEvent данные для обновления
+     */
+    private void updateEventData(Event eventToUpdate, Event updatedEvent) {
+        if (updatedEvent.getAnnotation() != null) {
+            eventToUpdate.setAnnotation(updatedEvent.getAnnotation());
+        }
+        if (updatedEvent.getCategory() != null) {
+            eventToUpdate.setCategory(updatedEvent.getCategory());
+        }
+        if (updatedEvent.getDescription() != null) {
+            eventToUpdate.setDescription(updatedEvent.getDescription());
+        }
+        if (updatedEvent.getTitle() != null) {
+            eventToUpdate.setTitle(updatedEvent.getTitle());
+        }
     }
 
     private EventFullDto changeState(Long eventId, EventState state) {
