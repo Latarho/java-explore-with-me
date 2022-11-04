@@ -75,3 +75,16 @@ CREATE TABLE IF NOT EXISTS compilations_events
     CONSTRAINT fk_event_id FOREIGN KEY (event_id) REFERENCES events (id),
     CONSTRAINT fk_compilation_id FOREIGN KEY (compilation_id) REFERENCES compilations (id)
 );
+
+CREATE TABLE IF NOT EXISTS comments
+(
+    id              BIGSERIAL                  NOT NULL,
+    content         VARCHAR                    NOT NULL,
+    user_id         BIGINT                     NOT NULL,
+    event_id        BIGINT                     NOT NULL,
+    created         TIMESTAMP WITHOUT TIME ZONE     NOT NULL,
+    status          INTEGER,
+    CONSTRAINT pk_comment PRIMARY KEY (id),
+    CONSTRAINT fk_comment_author FOREIGN KEY (user_id) REFERENCES users (id),
+    CONSTRAINT fk_comment_event FOREIGN KEY (event_id) REFERENCES events (id)
+);

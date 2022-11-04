@@ -144,7 +144,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     /**
-     * Проверка наличия пользователя в базе (из userService)
+     * Проверка наличия события в базе (из eventService)
      * @param eventId id события
      * @return объект класса Event
      */

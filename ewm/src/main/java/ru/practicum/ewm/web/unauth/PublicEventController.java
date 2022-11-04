@@ -60,10 +60,10 @@ public class PublicEventController {
     /**
      * Получение подробной информации об опубликованном событии по идентификатору
      * @param eventId - id события
-     * @return - объект класса Event, соответствующий переданному id
+     * @return - объект класса Event соответствующий id
      */
     @GetMapping("/{eventId}")
-    public EventFullDto getEventById(@PathVariable Long eventId, HttpServletRequest request) {
+    public EventFullDto getById(@PathVariable Long eventId, HttpServletRequest request) {
         log.info("Получен запрос - получение информации об опубликованном событии: " + eventId);
         return eventService.getById(request, eventId);
     }

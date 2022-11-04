@@ -2,6 +2,7 @@ version: '3.1'
 services:
   stats-server:
     build: ./stats
+    platform: 'linux/x86_64'
     container_name: stats-server
     restart: always
     ports:
@@ -15,6 +16,7 @@ services:
 
   stats-db:
     image: postgres:14-alpine
+    platform: 'linux/x86_64'
     container_name: stats-db
     ports:
       - "6544:5432"
@@ -27,6 +29,7 @@ services:
 
   ewm-service:
     build: ./ewm
+    platform: 'linux/x86_64'
     container_name: ewm-service
     restart: always
     ports:
@@ -43,6 +46,7 @@ services:
 
   ewm-db:
     image: postgres:14-alpine
+    platform: 'linux/x86_64'
     container_name: ewm-db
     ports:
       - "6546:5432"

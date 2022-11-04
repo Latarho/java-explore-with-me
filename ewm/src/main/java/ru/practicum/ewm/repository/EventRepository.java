@@ -24,7 +24,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
      * @param pageable количество событий
      * @return полная информация обо всех событиях подходящих под переданные условия
      */
-    @Query("SELECT e FROM Event AS e " +
+    @Query("SELECT e FROM events AS e " +
             "WHERE ((:text) IS NULL " +
             "OR UPPER(e.annotation) LIKE UPPER(CONCAT('%', :text, '%')) " +
             "OR UPPER(e.description) LIKE UPPER(CONCAT('%', :text, '%'))) " +
@@ -45,12 +45,12 @@ public interface EventRepository extends JpaRepository<Event, Long> {
      * @param pageable количество событий
      * @return полная информация обо всех событиях подходящих под переданные условия
      */
-    @Query("SELECT e FROM Event AS e " +
+    @Query("SELECT e FROM events AS e " +
             "WHERE ((:users) IS NULL OR e.initiator.id IN :users) " +
             "AND ((:states) IS NULL OR e.state IN :states) " +
             "AND ((:categories) IS NULL OR e.category.id IN :categories) " +
             "AND (e.eventDate >= :start) " +
-            "AND ( e.eventDate <= :end)")
+            "AND (e.eventDate <= :end)")
     Page<Event> findEventsByAdmin(List<Long> users, List<EventState> states, List<Long> categories,
                                     LocalDateTime start, LocalDateTime end, Pageable pageable);
 
