@@ -1,11 +1,11 @@
 package ru.practicum.ewm.model.comment;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 
 /**
  * DTO - комментарий к событию (данные для добавления нового комментария)
@@ -13,8 +13,8 @@ import javax.validation.constraints.NotEmpty;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder(toBuilder = true)
 public class NewCommentDto {
-    @NotEmpty
     @NotBlank
     private String content;
 }

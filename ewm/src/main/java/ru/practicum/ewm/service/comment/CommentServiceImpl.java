@@ -1,6 +1,7 @@
 package ru.practicum.ewm.service.comment;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.model.comment.Comment;
@@ -11,13 +12,10 @@ import ru.practicum.ewm.service.event.EventService;
 import ru.practicum.ewm.service.user.UserService;
 import ru.practicum.ewm.utils.enumeration.CommentState;
 import ru.practicum.ewm.utils.enumeration.EventState;
-import ru.practicum.ewm.utils.exception.EntityNotFoundException;
 import ru.practicum.ewm.utils.exception.WrongRequestException;
 import ru.practicum.ewm.utils.helpers.PageBuilder;
 
-import java.awt.print.Pageable;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -31,8 +29,8 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public Comment publishComment(Long commentId) {
-        Comment comment = getCommentOrThrow(commentId);
-        if (!(comment.getStatus().equals(CommentState.PENDING))) {
+        Comment comment = commentRepository.findEntityById(commentId);
+        if (!Objects.equals(comment.getStatus(), CommentState.PENDING)) {
             return comment;
         } else {
             comment.setStatus(CommentState.PUBLISHED);
@@ -43,8 +41,8 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public Comment rejectComment(Long commentId) {
-        Comment comment = getCommentOrThrow(commentId);
-        if (comment.getStatus().equals(CommentState.REJECTED)) {
+        Comment comment = commentRepository.findEntityById(commentId);
+        if (Objects.equals(comment.getStatus(), CommentState.REJECTED)) {
             return comment;
         } else {
             comment.setStatus(CommentState.REJECTED);
@@ -57,7 +55,7 @@ public class CommentServiceImpl implements CommentService {
     public Comment create(Long userId, Long eventId, Comment comment) {
         Event event = getEventOrThrow(eventId);
         User user = getUserOrThrow(userId);
-        if (event.getState().equals(EventState.PENDING)) {
+        if (Objects.equals(event.getState(), EventState.PENDING)) {
             throw new WrongRequestException("Событие не опубликовано, оставить комментарий нельзя");
         }
             comment.setUser(user);
@@ -70,10 +68,10 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public Comment update(Long userId, Long commentId, Comment comment) {
-        Comment commentToUpdate = getCommentOrThrow(commentId);
+        Comment commentToUpdate = commentRepository.findEntityById(commentId);
         getUserOrThrow(userId);
         checkCommentInitiator(commentToUpdate, userId);
-        if (commentToUpdate.getStatus().equals(CommentState.PUBLISHED)) {
+        if (Objects.equals(commentToUpdate.getStatus(), CommentState.PUBLISHED)) {
             throw new WrongRequestException("Изменить можно только отмененные комментарии или комментарии " +
                     "в состоянии ожидания модерации");
         }
@@ -85,7 +83,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public void delete(Long userId, Long commentId) {
-        Comment commentToDelete = getCommentOrThrow(commentId);
+        Comment commentToDelete = commentRepository.findEntityById(commentId);
         checkCommentInitiator(commentToDelete, userId);
         commentRepository.delete(commentToDelete);
     }
@@ -93,22 +91,17 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional(readOnly = true)
     public Comment getById(Long userId, Long commentId) {
-        Comment comment = getCommentOrThrow(commentId);
+        Comment comment = commentRepository.findEntityById(commentId);
         checkCommentInitiator(comment, userId);
         return comment;
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Comment> getAllWithPagination(Long eventId, int from, int size) {
+    public Page<Comment> getAllWithPagination(Long eventId, int from, int size) {
         getEventOrThrow(eventId);
         return commentRepository.findByEventIdAndStatusWithPagination(eventId, CommentState.PUBLISHED,
-                (Pageable) PageBuilder.build(from, size));
-    }
-
-    private Comment getCommentOrThrow(Long commentId) {
-        return commentRepository.findById(commentId).orElseThrow(() ->
-                new EntityNotFoundException("Отсутствует комментарий: " + commentId));
+                PageBuilder.build(from, size));
     }
 
     /**

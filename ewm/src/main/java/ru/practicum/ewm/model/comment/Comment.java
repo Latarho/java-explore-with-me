@@ -1,6 +1,7 @@
 package ru.practicum.ewm.model.comment;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.ewm.model.event.Event;
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 @Table(name = "comments")
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder(toBuilder = true)
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

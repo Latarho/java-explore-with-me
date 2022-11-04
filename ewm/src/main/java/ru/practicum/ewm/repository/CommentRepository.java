@@ -1,14 +1,13 @@
 package ru.practicum.ewm.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import ru.practicum.ewm.model.comment.Comment;
 import ru.practicum.ewm.utils.enumeration.CommentState;
+import ru.practicum.ewm.utils.jpa.CustomJpaRepository;
 
-import java.awt.print.Pageable;
-import java.util.List;
-
-public interface CommentRepository extends JpaRepository<Comment, Long> {
+public interface CommentRepository extends CustomJpaRepository<Comment, Long> {
 
     /**
      * Поиск комментария по событию и статусу
@@ -17,8 +16,8 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
      * @param pageable количество событий
      * @return полная информация обо всех комментариях подходящих под переданные условия
      */
-    @Query("SELECT c FROM comments AS c " +
-            "WHERE (c.event_id = :eventId) " +
+    @Query("SELECT c FROM Comment AS c " +
+            "WHERE (c.event.id = :eventId) " +
             "AND (c.status = :status)")
-    List<Comment> findByEventIdAndStatusWithPagination(Long eventId, CommentState status, Pageable pageable);
+    Page<Comment> findByEventIdAndStatusWithPagination(Long eventId, CommentState status, Pageable pageable);
 }
