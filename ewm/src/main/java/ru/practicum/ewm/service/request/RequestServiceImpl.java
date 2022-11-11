@@ -45,7 +45,7 @@ public class RequestServiceImpl implements RequestService {
         if (Objects.equals(requester.getId(), event.getInitiator().getId())) {
             throw new WrongRequestException("Нельзя участвовать в своем событии");
         }
-        if (!event.getState().equals(EventState.PUBLISHED)) {
+        if (!Objects.equals(event.getState(), EventState.PUBLISHED)) {
             throw new WrongRequestException("Событие не опубликовано, принять участие нельзя");
         }
         if (event.getParticipantLimit() != 0 && eventRequests.size() >= event.getParticipantLimit()) {
@@ -108,9 +108,9 @@ public class RequestServiceImpl implements RequestService {
         List<Request> requestList = event.getRequests();
         long approvedCount = requestList.stream().filter(request1 -> request1.getState() == RequestState.CONFIRMED).count();
         if (event.getParticipantLimit() == approvedCount + 1) {
-            for (Request request1 : requestList) {
-                if (request1.getState().equals(RequestState.PENDING))
-                    request1.setState(RequestState.REJECTED);
+            for (Request requestFromEvent : requestList) {
+                if (Objects.equals(requestFromEvent.getState(), RequestState.PENDING))
+                    requestFromEvent.setState(RequestState.REJECTED);
             }
         }
         return RequestMapper.toParticipationRequestDto(request);
@@ -144,7 +144,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     /**
-     * Проверка наличия пользователя в базе (из userService)
+     * Проверка наличия события в базе (из eventService)
      * @param eventId id события
      * @return объект класса Event
      */

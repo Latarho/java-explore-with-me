@@ -37,9 +37,10 @@ public class StatsController {
      * @return статистика по посещениям
      */
     @GetMapping("/stats")
-    public List<StatsOutDto> getAll(@RequestParam String start, @RequestParam String end, @RequestParam List<String> uris,
+    public List<StatsOutDto> getAll(@RequestParam String start,
+                                    @RequestParam String end,
+                                    @RequestParam List<String> uris,
                                     @RequestParam(defaultValue = "false") boolean unique) {
-        uris.replaceAll(s -> URLDecoder.decode(s, StandardCharsets.UTF_8));
         log.info("Получен запрос - статистика по посещениям за период с " + start + " по " + end + " для URI: " + uris);
         return statsService.getAll(URLDecoder.decode(start, StandardCharsets.UTF_8),
                                    URLDecoder.decode(end, StandardCharsets.UTF_8), uris, unique);

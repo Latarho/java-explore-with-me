@@ -10,6 +10,9 @@ import java.util.stream.Collectors;
 
 import static ru.practicum.ewm.utils.constants.DateTimeConfig.FORMAT;
 
+/**
+ * Маппер объекта класса Request {@link ru.practicum.ewm.model.request.Request}
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class RequestMapper {
 

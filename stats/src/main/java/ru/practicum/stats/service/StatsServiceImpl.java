@@ -8,6 +8,8 @@ import ru.practicum.stats.model.statshit.StatsInDto;
 import ru.practicum.stats.model.statshit.StatsOutDto;
 import ru.practicum.stats.repository.StatsRepository;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -36,6 +38,7 @@ public class StatsServiceImpl implements StatsService {
         List<StatsOutDto> statsOutDtoList = new ArrayList<>();
         LocalDateTime startTime = LocalDateTime.parse(start, FORMAT);
         LocalDateTime endTime = LocalDateTime.parse(end, FORMAT);
+        uris.replaceAll(s -> URLDecoder.decode(s, StandardCharsets.UTF_8));
         for (String uri : uris) {
             if (!isUnique && startTime.compareTo(endTime) == 0) {
                 statsOutDtoList.add(StatsHitMapper.toStatsOutDto(

@@ -26,14 +26,22 @@ public class PrivateEventController {
     private final EventService eventService;
     private final RequestService requestService;
 
+    /**
+     * Добавление нового события
+     * @param userId id текущего пользователя
+     * @param newEventDto данные добавляемого события
+     * @return объект класса Event (новое событие)
+     */
     @PostMapping("/{userId}/events")
-    public EventFullDto create(@PathVariable Long userId, @Valid @RequestBody NewEventDto newEventDto) {
+    public EventFullDto create(@PathVariable Long userId,
+                               @Valid @RequestBody NewEventDto newEventDto) {
         log.info("Получен запрос - добавление нового события: " + newEventDto.toString() + " пользователь: " + userId);
         return eventService.create(newEventDto, userId);
     }
 
     @GetMapping("/{userId}/events/{eventId}")
-    public EventFullDto getFullEventById(@PathVariable Long userId, @PathVariable Long eventId) {
+    public EventFullDto getFullEventById(@PathVariable Long userId,
+                                         @PathVariable Long eventId) {
         log.info("Получен запрос - получение полной информации о событии: " + eventId + " пользователь: " + userId);
         return eventService.getFullEventById(userId, eventId);
     }
@@ -47,14 +55,16 @@ public class PrivateEventController {
     }
 
     @PatchMapping("/{userId}/events")
-    public EventFullDto updateEvent(@PathVariable Long userId, @Valid @RequestBody EventUpdateDto eventUpdateDto) {
+    public EventFullDto updateEvent(@PathVariable Long userId,
+                                    @Valid @RequestBody EventUpdateDto eventUpdateDto) {
         log.info("Получен запрос - редактирование события пользователем: " + userId +
                  " информация для редактирования: " + eventUpdateDto.toString());
         return eventService.updateEvent(eventUpdateDto, userId);
     }
 
     @PatchMapping("/{userId}/events/{eventId}")
-    public EventFullDto cancelEvent(@PathVariable Long userId, @PathVariable Long eventId) {
+    public EventFullDto cancelEvent(@PathVariable Long userId,
+                                    @PathVariable Long eventId) {
         log.info("Получен запрос - отмена события: " + eventId + "пользователь: " + userId);
         return eventService.cancelEvent(userId, eventId);
     }
@@ -68,7 +78,8 @@ public class PrivateEventController {
     }
 
     @PatchMapping("/{userId}/events/{eventId}/requests/{reqId}/confirm")
-    public ParticipationRequestDto confirmRequest(@PathVariable Long userId, @PathVariable Long eventId,
+    public ParticipationRequestDto confirmRequest(@PathVariable Long userId,
+                                                  @PathVariable Long eventId,
                                                   @PathVariable Long reqId) {
         log.info("Получен запрос - подтверждение запроса на участие для пользователя: " + userId +
                 " событие: " + eventId + " запрос: " + reqId);
@@ -76,7 +87,8 @@ public class PrivateEventController {
     }
 
     @PatchMapping("/{userId}/events/{eventId}/requests/{reqId}/reject")
-    public ParticipationRequestDto rejectRequest(@PathVariable Long userId, @PathVariable Long eventId,
+    public ParticipationRequestDto rejectRequest(@PathVariable Long userId,
+                                                 @PathVariable Long eventId,
                                                  @PathVariable Long reqId) {
         log.info("Получен запрос - отклонение запроса на участие для пользователя: " + userId +
                 " событие: " + eventId + " запрос: " + reqId);

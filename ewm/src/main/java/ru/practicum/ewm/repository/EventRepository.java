@@ -2,17 +2,17 @@ package ru.practicum.ewm.repository;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ru.practicum.ewm.model.category.Category;
 import ru.practicum.ewm.model.event.Event;
 import ru.practicum.ewm.model.user.User;
 import ru.practicum.ewm.utils.enumeration.EventState;
+import ru.practicum.ewm.utils.jpa.CustomJpaRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface EventRepository extends JpaRepository<Event, Long> {
+public interface EventRepository extends CustomJpaRepository<Event, Long> {
 
     /**
      * Поиск события
@@ -30,8 +30,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "OR UPPER(e.description) LIKE UPPER(CONCAT('%', :text, '%'))) " +
             "AND ((:categories) IS NULL OR e.category.id IN :categories) " +
             "AND ((:paid) IS NULL OR e.isPaid = :paid) " +
-            "AND (e.eventDate >= :start) " +
-            "AND ( e.eventDate <= :end)")
+            "AND (e.eventDate BETWEEN :start AND :end)")
     Page<Event> findEvents(String text, List<Long> categories, Boolean paid, LocalDateTime start,
                              LocalDateTime end, Pageable pageable);
 
@@ -49,8 +48,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "WHERE ((:users) IS NULL OR e.initiator.id IN :users) " +
             "AND ((:states) IS NULL OR e.state IN :states) " +
             "AND ((:categories) IS NULL OR e.category.id IN :categories) " +
-            "AND (e.eventDate >= :start) " +
-            "AND ( e.eventDate <= :end)")
+            "AND (e.eventDate BETWEEN :start AND :end)")
     Page<Event> findEventsByAdmin(List<Long> users, List<EventState> states, List<Long> categories,
                                     LocalDateTime start, LocalDateTime end, Pageable pageable);
 
